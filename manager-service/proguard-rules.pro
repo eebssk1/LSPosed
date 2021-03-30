@@ -23,3 +23,5 @@
 -keepclassmembers class * implements android.os.Parcelable {
     public static final ** CREATOR;
 }
+-dontobfuscate
+-optimizations !code/simplification/cast,!field/*,!class/merging/*
