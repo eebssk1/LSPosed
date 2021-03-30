@@ -49,7 +49,7 @@ namespace lspd {
     void InstallArtHooks(void *art_handle);
 
     void InstallInlineHooks() {
-        if (installed) {
+        if (UNLIKELY(installed)) {
             LOGI("Inline hooks have been installed, skip");
             return;
         }
@@ -68,7 +68,7 @@ namespace lspd {
     }
 
     void InstallArtHooks(void *art_handle) {
-        if (art_hooks_installed) {
+        if (UNLIKELY(art_hooks_installed)) {
             return;
         }
         art::hidden_api::DisableHiddenApi(art_handle);

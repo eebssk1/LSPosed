@@ -40,15 +40,15 @@ namespace lspd {
             int, __system_property_get, (const char *key, char *value), {
                 int res = backup(key, value);
                 if (key) {
-                    if (strcmp(kPropKeyCompilerFilter, key) == 0) {
+                    if (UNLIKELY(strcmp(kPropKeyCompilerFilter, key) == 0)) {
 //                strcpy(value, kPropValueCompilerFilter);
                         LOGI("system_property_get: %s -> %s", key, value);
                     }
 
-                    if (strcmp(kPropKeyCompilerFlags, key) == 0) {
-                        if (strcmp(value, "") == 0)
+                    if (UNLIKELY(strcmp(kPropKeyCompilerFlags, key) == 0)) {
+                        if (LIKELY(strcmp(value, "") == 0))
                             strcpy(value, kPropValueCompilerFlags);
-                        else if (strstr(value, kPropValueCompilerFlags) == nullptr) {
+                        else if (LIKELY(strstr(value, kPropValueCompilerFlags) == nullptr)) {
                             if (strlen(value) + strlen(kPropValueCompilerFlagsWS) >
                                 PROP_VALUE_MAX) {
                                 //just fallback, why not
@@ -62,7 +62,7 @@ namespace lspd {
                     }
 
 
-                    if (api_level == __ANDROID_API_O_MR1__) {
+                    if (UNLIKELY(api_level == __ANDROID_API_O_MR1__)) {
                         // https://android.googlesource.com/platform/art/+/f5516d38736fb97bfd0435ad03bbab17ddabbe4e
                         // Android 8.1 add a fatal check for debugging (removed in Android 9.0),
                         // which will be triggered by LSPosed in cases where target method is hooked
@@ -84,15 +84,15 @@ namespace lspd {
             "_ZN7android4base11GetPropertyERKNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEES9_",
             std::string, GetProperty, (const std::string &key, const std::string &default_value), {
                 std::string res = backup(key, default_value);
-                if (strcmp(kPropKeyCompilerFilter, key.c_str()) == 0) {
+                if (UNLIKELY(strcmp(kPropKeyCompilerFilter, key.c_str()) == 0)) {
 //            res = kPropValueCompilerFilter;
                     LOGI("android::base::GetProperty: %s -> %s", key.c_str(), res.c_str());
                 }
 
-                if (strcmp(kPropKeyCompilerFlags, key.c_str()) == 0) {
-                    if (strcmp(res.c_str(), "") == 0)
+                if (UNLIKELY((strcmp(kPropKeyCompilerFlags, key.c_str()) == 0))) {
+                    if (LIKELY(strcmp(res.c_str(), "") == 0))
                         res = kPropValueCompilerFlags;
-                    else if (strstr(res.c_str(), kPropValueCompilerFlags) == nullptr) {
+                    else if (LIKELY(strstr(res.c_str(), kPropValueCompilerFlags) == nullptr)) {
                         if (strlen(res.c_str()) + strlen(kPropValueCompilerFlagsWS) >
                             PROP_VALUE_MAX) {
                             //just fallback, why not
@@ -105,7 +105,7 @@ namespace lspd {
                     LOGI("android::base::GetProperty: %s -> %s", key.c_str(), res.c_str());
                 }
 
-                if (api_level == __ANDROID_API_O_MR1__) {
+                if (UNLIKELY(api_level == __ANDROID_API_O_MR1__)) {
                     // see __system_property_get hook above for explanations
                     if (strcmp(kPropKeyUseJitProfiles, key.c_str()) == 0) {
                         res = "false";

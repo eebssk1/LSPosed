@@ -52,7 +52,7 @@ namespace lspd {
         vm_->GetEnv((void **) (&env), JNI_VERSION_1_4);
         art::JNIEnvExt env_ext(env);
         ScopedLocalRef clazz(env, env_ext.NewLocalRefer(class_ptr));
-        if (clazz != nullptr) {
+        if (UNLIKELY(clazz != nullptr)) {
             JNI_CallStaticVoidMethod(env, class_linker_class_, post_fixup_static_mid_, clazz.get());
         }
     }
@@ -175,8 +175,8 @@ namespace lspd {
 
     void
     Context::OnNativeForkSystemServerPost(JNIEnv *env, jint res) {
-        if (res != 0) return;
-        if (!skip_) {
+        if (UNLIKELY(res != 0)) return;
+        if (LIKELY(!skip_)) {
             LoadDex(env);
             Service::instance()->HookBridge(*this, env);
             auto binder = Service::instance()->RequestBinderForSystemServer(env);
@@ -199,19 +199,19 @@ namespace lspd {
         nice_name_ = nice_name;
         JUTFString process_name(env, nice_name);
         skip_ = !sym_initialized;
-        if (!skip_ && !app_data_dir) {
+        if (UNLIKELY(!skip_ && !app_data_dir)) {
             LOGD("skip injecting into %s because it has no data dir", process_name.get());
             skip_ = true;
         }
-        if (!skip_ && is_child_zygote) {
+        if (LIKELY(!skip_ && is_child_zygote)) {
             skip_ = true;
             LOGD("skip injecting into %s because it's a child zygote", process_name.get());
         }
 
-        if (!skip_ && ((app_id >= FIRST_ISOLATED_UID && app_id <= LAST_ISOLATED_UID) ||
+        if (UNLIKELY(!skip_ && ((app_id >= FIRST_ISOLATED_UID && app_id <= LAST_ISOLATED_UID) ||
                        (app_id >= FIRST_APP_ZYGOTE_ISOLATED_UID &&
                         app_id <= LAST_APP_ZYGOTE_ISOLATED_UID) ||
-                       app_id == SHARED_RELRO_UID)) {
+                       app_id == SHARED_RELRO_UID))) {
             skip_ = true;
             LOGI("skip injecting into %s because it's isolated", process_name.get());
         }
