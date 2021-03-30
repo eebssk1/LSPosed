@@ -50,3 +50,5 @@
 }
 -repackageclasses
 -allowaccessmodification
+-optimizations !code/simplification/cast,!field/*,!class/merging/*
+
