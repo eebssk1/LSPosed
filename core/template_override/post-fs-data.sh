@@ -71,6 +71,7 @@ loop_logcat() {
     if [ $? -ne 1 ]; then
       break
     fi
+    sleep 2
   done
 }
 
@@ -120,12 +121,29 @@ start_log_catcher() {
   echo "${LOG_PID}" >"${LOG_PATH}/${LOG_FILE_NAME}.pid"
 }
 
+findpids() {
+  for pid in /proc/$1/task/* ; do
+    pid="$(basename "$pid")"
+    PID_LIST="$PID_LIST $pid "
+    for cpid in $(cat /proc/$1/task/$pid/children) ; do
+      findpids $cpid
+    done
+  done
+}
+
+setprio() {
+  PID_LIST=
+  findpids $$
+  renice -n 8 $PID_LIST
+}
+
 chcon -R u:object_r:system_file:s0 "${MODDIR}"
 chcon -R u:object_r:system_file:s0 "/data/adb/lspd"
 rm -rf ${LOG_PATH}.old
 mv ${LOG_PATH} ${LOG_PATH}.old
 mkdir -p ${LOG_PATH}
 chcon -R u:object_r:magisk_file:s0 ${LOG_PATH}
+setprio
 
 if [ ! -z "${MISC_PATH}" ]; then
   chcon -R u:object_r:magisk_file:s0 "${BASE_PATH}"
@@ -140,7 +158,9 @@ start_app_process() {
     if [ -S "/dev/socket/zygote" ]; then
       /system/bin/app_process -Djava.class.path=$(magisk --path)/.magisk/modules/riru_lsposed/framework/lspd.dex /system/bin --nice-name=lspd org.lsposed.lspd.core.Main
     fi
+    sleep 2
   done
 }
 
 start_app_process &
+setprio
