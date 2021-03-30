@@ -21,7 +21,7 @@
 -repackageclasses
 -allowaccessmodification
 -overloadaggressively
-
+-optimizations !code/simplification/cast,!field/*,!class/merging/*
 # Gson uses generic type information stored in a class file when working with fields. Proguard
 # removes such information by default, so configure it to keep all of it.
 -keepattributes Signature,InnerClasses

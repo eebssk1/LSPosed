@@ -34,11 +34,10 @@ val androidTargetCompatibility: JavaVersion by rootProject.extra
 val verCode: Int by rootProject.extra
 val verName: String by rootProject.extra
 
-val androidStoreFile: String? by rootProject
-val androidStorePassword: String? by rootProject
-val androidKeyAlias: String? by rootProject
-val androidKeyPassword: String? by rootProject
-
+val androidStoreFile: String? = "D:\\Proj\\LSPosed\\key.jks"
+val androidStorePassword: String? = "ckdckdckd"
+val androidKeyAlias: String? = "key0"
+val androidKeyPassword: String? = "ckdckdckd"
 android {
     compileSdkVersion(androidCompileSdkVersion)
     ndkVersion = androidCompileNdkVersion
@@ -90,7 +89,9 @@ android {
                 storePassword = androidStorePassword
                 keyAlias = androidKeyAlias
                 keyPassword = androidKeyPassword
+                
             }
+            enableV1Signing = true
         }
     }
 
@@ -103,7 +104,7 @@ android {
                 signingConfig = if (it.storeFile?.exists() == true) it
                 else signingConfigs.named("debug").get()
                 isMinifyEnabled = true
-                isShrinkResources = true
+                isShrinkResources = false
                 proguardFiles("proguard-rules.pro")
             }
         }
