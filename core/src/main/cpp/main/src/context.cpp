@@ -58,7 +58,7 @@ namespace lspd {
     }
 
     void Context::PreLoadDex(const std::string &dex_path) {
-        if (LIKELY(!dex.empty())) return;
+        if (UNLIKELY(!dex.empty())) return;
 
         FILE *f = fopen(dex_path.c_str(), "rb");
         fseek(f, 0, SEEK_END);
